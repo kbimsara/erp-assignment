@@ -12,8 +12,8 @@
       <li class="nav-item <?php if($page=='item'){echo 'active';} ?>">
         <a class="nav-link" href="./item.php">Item</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Report</a>
+      <li class="nav-item <?php if($page=='report'){echo 'active';} ?>">
+        <a class="nav-link" href="./report.php">Report</a>
       </li>
     </ul>
   </div>
