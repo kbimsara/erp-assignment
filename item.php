@@ -16,6 +16,11 @@
   <!-- StyleSheet File -->
   <link rel="stylesheet" href="./style.css">
 
+  <!-- jQuery and Bootstrap Bundle (includes Popper) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
 </head>
@@ -30,7 +35,7 @@
   </style> -->
 
   <?php
-  require_once './lib/idGeneratorUser.php';
+  require_once './lib/idGeneratorItem.php';
   require_once './config.php';
 
 
@@ -38,63 +43,39 @@
   if (isset($_POST['createItem'])) {
 
     $newIdGenerator = new IdGenerator();
-    $id = $newIdGenerator->generateUniqueUserId(); //  use -> instead of .
+    $id = $newIdGenerator->generateUniqueItemId(); //  use -> instead of .
 
-    $title = $_POST["title"];
-    $fname = $_POST["fname"];
-    $lname = $_POST["lname"];
-    $contact = $_POST["contact"];
-    $district = $_POST["district"];
+    $item = $_POST["item"];
+    $idCt = $_POST["subCatagory"];
+    $quantity = $_POST["quantity"];
+    $unitPrice = $_POST["price"];
 
-    //  Check if user already exists
-    $query_check = "SELECT * FROM `customers` WHERE `firstName`='$fname' AND `lastName`='$lname' AND `contact`='$contact' LIMIT 1;";
-    $query_check_run = mysqli_query($Connector, $query_check);
 
-    if (!$query_check_run) {
-      die("Database error: " . mysqli_error($Connector));
-    }
+    //  Use actual form data instead of placeholders
+    $query_insert = "INSERT INTO `items` (`itemCode`, `itemName`, `idCt`, `quantity`, `unitPrice`) VALUES ('$id', '$item', '$idCt', '$quantity', '$unitPrice');";
 
-    if (mysqli_num_rows($query_check_run) < 1) {
+    $query_run = mysqli_query($Connector, $query_insert);
 
-      //  Use actual form data instead of placeholders
-      $query_insert = "
-            INSERT INTO `customers` (`id`, `title`, `firstName`, `lastName`, `contact`, `district`) 
-            VALUES ('$id', '$title', '$fname', '$lname', '$contact', '$district');
-        ";
-
-      $query_run = mysqli_query($Connector, $query_insert);
-
-      if ($query_run) {
-        echo "
+    if ($query_run) {
+      echo "
                 <script>
                 Swal.fire(
-                    'Account Created!',
-                    'Customer Registored Successfully.',
+                    'Item Created!',
+                    'Item Registored Successfully.',
                     'success'
                 );
                 </script>
             ";
-      } else {
-        echo "
+    } else {
+      echo "
                 <script>
                 Swal.fire({
                     icon: 'error',
                     title: 'Database Error',
-                    text: 'Failed to create account. Please try again.'
+                    text: 'Failed to create Item. Please try again.'
                 });
                 </script>
             ";
-      }
-    } else {
-      echo "
-            <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'User already exists!'
-            });
-            </script>
-        ";
     }
   }
 
@@ -113,47 +94,48 @@
           <!-- Item name -->
           <div class="col-12 col-sm-11 col-md-6 col-lg-3 col-xl-3">
             <label for="exampleInputTEXT1">Item name</label>
-            <input type="text" class="form-control" name="name" id="name" placeholder="Samsung TV 24 inc" required>
+            <input type="text" class="form-control" name="item" id="item" placeholder="Samsung TV 24 inc" oninvalid="this.setCustomValidity('Please Enter Item')" oninput="setCustomValidity('')" required>
           </div>
           <!-- quantity -->
           <div class="col-12 col-sm-11 col-md-6 col-lg-1 col-xl-1">
             <label for="exampleInputTEXT1">Quantity</label>
-            <input type="number" class="form-control" name="quantity" id="quantity" placeholder="5" required>
+            <input type="number" class="form-control" name="quantity" id="quantity" placeholder="5" oninvalid="this.setCustomValidity('Please Enter Quantity')" oninput="setCustomValidity('')" required>
           </div>
           <!-- Unit Price -->
           <div class="col-12 col-sm-11 col-md-6 col-lg-1 col-xl-1">
             <label for="exampleInputTEXT1">Unit Price</label>
-            <input type="text" class="form-control" name="price" id="price" placeholder="1000" required>
+            <input type="text" class="form-control" name="price" id="price" placeholder="1000" oninvalid="this.setCustomValidity('Please Enter Unit Price')" oninput="setCustomValidity('')" required>
           </div>
           <!-- Catagory -->
           <div class="col-12 col-sm-11 col-md-6 col-lg-2 col-xl-2 mt-4">
             <center>
-              <label for="exampleInputTEXT1">Catagory</label> 
-              <select required name="district" id="district" class="dropdown"
-                style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;">
+              <label for="exampleInputTEXT1">Catagory</label>
+              <select required name="Catagory" id="Catagory" class="dropdown"
+                style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;" onchange="FetchStream(this.value)" oninvalid="this.setCustomValidity('Please Select Catagory')" oninput="setCustomValidity('')" required>
 
-                <option value="">Select District</option>
-                <option value="Colombo">Colombo</option>
-                <option value="Gampaha">Gampaha</option>
-                <option value="Kalutara">Kalutara</option>
-
+                <option value="">Select Catagory</option>
+                <?php
+                require_once './config.php';
+                $sql_ct = "SELECT DISTINCT(category) FROM `category` ORDER BY timeStamp DESC;";
+                $result_ct = mysqli_query($Connector, $sql_ct);
+                while ($row = mysqli_fetch_array($result_ct)) {
+                  $category = $row['category'];
+                ?>
+                  <option value="<?php echo $category; ?>"><?php echo $category; ?></option>
+                <?php
+                }
+                ?>
               </select>
 
             </center>
           </div>
           <!-- Catagory sub -->
-          <div class="col-12 col-sm-11 col-md-6 col-lg-2 col-xl-2 mt-4">
+          <div class="col-12 col-sm-11 col-md-6 col-lg-3 col-xl-3 mt-4">
             <center>
               <label for="exampleInputTEXT1">Sub Catagory</label>
-              <select required name="district" id="district" class="dropdown"
-                style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;">
-
-                <option value="">Select District</option>
-                <option value="Colombo">Colombo</option>
-                <option value="Gampaha">Gampaha</option>
-                <option value="Kalutara">Kalutara</option>
-                <option value="Kandy">Kandy</option>
-
+              <select required name="subCatagory" id="subCatagory" class="dropdown"
+                style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;" oninvalid="this.setCustomValidity('Please Sub Catagory')" oninput="setCustomValidity('')" required>
+                <option value="">Select Catagory sub</option>
               </select>
 
             </center>
@@ -161,7 +143,7 @@
           <!-- submit -->
           <div class="col-12 col-sm-10 col-md-10 col-lg-10 col-xl-10 mt-4">
             <center>
-              <button type="submit" class="btn btn-primary" style="width: 100px;" name="createUser">Save</button>
+              <button type="submit" class="btn btn-primary" style="width: 100px;" name="createItem">Save</button>
             </center>
           </div>
         </div>
@@ -175,7 +157,6 @@
             <th scope="col">#</th>
             <th scope="col">Item Name</th>
             <th scope="col">quantity</th>
-            <th scope="col">Last Name</th>
             <th scope="col">unitPrice</th>
             <th scope="col">Catagory</th>
             <th scope="col">Sub-Catagory</th>
@@ -186,7 +167,7 @@
           <?php
           require_once './config.php';
 
-          $sql = "SELECT * FROM `items` ORDER BY timeStamp DESC;";
+          $sql = "SELECT i.itemCode,i.itemName,i.quantity,i.unitPrice,i.timeStamp,c.category,c.categorySub FROM items AS i JOIN category AS c ON i.idCt = c.idCt ORDER BY i.timeStamp DESC;";
           $result = mysqli_query($Connector, $sql);
           $i = 0;
 
@@ -194,33 +175,21 @@
             $i++;
             $itemCode = $row['itemCode'];
             $itemName = $row['itemName'];
-            $idCt = $row['idCt'];
             $quantity = $row['quantity'];
             $unitPrice = $row['unitPrice'];
-            $timeStamp = $row['timeStamp'];
+            $category = $row['category'];
+            $categorySub = $row['categorySub'];
 
             $stat = "selected";
 
           ?>
             <tr>
               <th scope="row"><?php echo $i; ?></th>
-              <td scope="row"><?php echo $i; ?></td>
-              <td>
-                <select name="title_<?php echo $id; ?>" id="title_<?php echo $id; ?>" class="dropdown" style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;">
-                  <option value="Mr" <?php if ($title == 'Mr') {
-                                        echo $stat;
-                                      } ?>>Mr</option>
-                  <option value="Mrs" <?php if ($title == 'Mrs') {
-                                        echo $stat;
-                                      } ?>>Mrs</option>
-                  <option value="Miss" <?php if ($title == 'Miss') {
-                                          echo $stat;
-                                        } ?>>Miss</option>
-                  <option value="Dr" <?php if ($title == 'Dr') {
-                                        echo $stat;
-                                      } ?>>Dr</option>
-                </select>
-              </td>
+              <td scope="row"><?php echo $itemName; ?></td>
+              <td scope="row"><?php echo $quantity; ?></td>
+              <td scope="row"><?php echo $unitPrice; ?></td>
+              <td scope="row"><?php echo $category; ?></td>
+              <td scope="row"><?php echo $categorySub; ?></td>
               <td>
                 <a href="./lib/Action.php?del=<?php echo $id; ?>">
                   <button type="button" class="btn btn-danger">
@@ -245,18 +214,24 @@
     </div>
   </div>
   <!-- Optional JavaScript; choose one of the two! -->
+  <!-- Dynamic drop-down script -->
+  <script type="text/javascript">
+    function FetchStream(name) {
+      $('#subCatagory').html('');
+      $.ajax({
+        type: 'post',
+        url: './lib/ajaxdata.php',
+        data: {
+          Catagory_name: name
+        },
+        success: function(data) {
+          $('#subCatagory').html(data);
+        }
 
-  <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+      })
+    }
+  </script>
 
-  <!-- Option 2: Separate Popper and Bootstrap JS -->
-  <!--
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
-    -->
-  <!-- Footer -->
 </body>
 
 </html>
