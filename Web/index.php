@@ -10,6 +10,15 @@
   <!-- Page Title bar -->
   <link rel="icon" type="image/png" href="./src/icon/icn.png" />
 
+  <!-- Optional JavaScript; choose one of the two! -->
+
+  <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+
+  <!-- jQuery (use full version, not slim) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
   <!-- Sweet Alert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -98,11 +107,6 @@
     }
   }
 
-  if (isset($_POST["Update"])) {
-    $No_Students = $_SESSION["No_Student"];
-    $BID = $_SESSION['BatchCode'];
-    
-  }
 
   ?>
 
@@ -192,6 +196,33 @@
       </form>
     </div>
 
+    <!-- find section -->
+    <div class="container-fluid justify-content-center" style="background-color: #435663; padding: 25px; border-radius: 10px; margin-top: 60px;">
+      <center>
+        <h4>find</h4>
+      </center>
+      <!-- Search form (functionality not implemented) -->
+      <div class="form-inline justify-content-center mt-3 mb-3">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search by Name, Contact or District" aria-label="Search" style="width: 50%;" required id="searchInput">
+        <button class="btn btn-success my-2 my-sm-0" type="button" name="search" onclick="FetchSearch()">Search</button>
+      </div>
+
+    </div>
+    <!-- date filter -->
+    <div class="form-inline justify-content-center" style="margin-top: 50px;">
+      <div class="form-group col-md-2">
+        <label for="inputPassword4">Form :</label> &nbsp;
+        <input type="date" name="fromDate" id="fromDate" class="form-control" placeholder="No data" required>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="inputPassword4">To :</label> &nbsp;
+        <input type="date" name="toDate" id="toDate" class="form-control" placeholder="No data" required>
+      </div>
+      <div class="form-group col-md-2">
+        <button class="btn btn-success my-2 my-sm-0" type="button" name="search" onclick="FetchSearch()">Search</button>
+      </div>
+    </div>
+
     <div class="container-fluid table-responsive" style="margin-top: 80px; margin-bottom: 50px;">
       <table class="table table-hover table-dark">
         <thead class="sticky-top bg-dark">
@@ -205,7 +236,7 @@
             <th scope="col">Action</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="customerTableBody">
           <?php
           require_once './config.php';
 
@@ -228,7 +259,7 @@
             <tr>
               <th scope="row"><?php echo $i; ?></th>
               <td>
-                <select name="title_<?php echo $id; ?>" id="title_<?php echo $id; ?>" class="dropdown" style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;">
+                <select name="title_<?php echo $id; ?>" id="title_<?php echo $id; ?>" class="dropdown" style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;" disabled>
                   <option value="Mr" <?php if ($title == 'Mr') {
                                         echo $stat;
                                       } ?>>Mr</option>
@@ -244,16 +275,16 @@
                 </select>
               </td>
               <td>
-                <input type="text" class="form-control bg-dark text-light" style="max-width: fit-content;" id="fname_<?php echo $id; ?>" name="fname_<?php echo $id; ?>" placeholder="Enter First Name" value="<?php echo $firstName; ?>" required>
+                <input type="text" class="form-control bg-dark text-light" style="max-width: fit-content;" id="fname_<?php echo $id; ?>" name="fname_<?php echo $id; ?>" placeholder="Enter First Name" value="<?php echo $firstName; ?>" disabled>
               </td>
               <td>
-                <input type="text" class="form-control bg-dark text-light" style="max-width: fit-content;" id="lname_<?php echo $id; ?>" name="lname_<?php echo $id; ?>" placeholder="Enter First Name" value="<?php echo $lastName; ?>" required>
+                <input type="text" class="form-control bg-dark text-light" style="max-width: fit-content;" id="lname_<?php echo $id; ?>" name="lname_<?php echo $id; ?>" placeholder="Enter First Name" value="<?php echo $lastName; ?>" disabled>
               </td>
               <td>
-                <input type="text" class="form-control bg-dark text-light" style="max-width: 120px;" id="contact_<?php echo $id; ?>" name="contact_<?php echo $id; ?>" placeholder="Enter First Name" value="<?php echo $contact; ?>" required>
+                <input type="text" class="form-control bg-dark text-light" style="max-width: 120px;" id="contact_<?php echo $id; ?>" name="contact_<?php echo $id; ?>" placeholder="Enter First Name" value="<?php echo $contact; ?>" disabled>
               </td>
               <td>
-                <select name="district_<?php echo $id; ?>" id="district_<?php echo $id; ?>" class="dropdown" required
+                <select name="district_<?php echo $id; ?>" id="district_<?php echo $id; ?>" class="dropdown" disabled
                   style="padding: 10px; border-radius: 5px; background-color: #343a40; color: white; border: 1px solid #ced4da;">
                   <option value="">Select District</option>
                   <option value="Colombo" <?php if ($district == 'Colombo') {
@@ -335,11 +366,9 @@
                 </select>
               </td>
               <td>
-                <button type="submit" class="btn btn-warning" name="update"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
-                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
-                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
-                  </svg>
-                </button>
+                <a href="customerEdit.php?edit=<?php echo $id; ?>">
+                  <button type="submit" class="btn btn-info" name="update" style="margin-right: 5px; width: 100px;">More</button>
+                </a>
                 <a href="./lib/Action.php?del=<?php echo $id; ?>">
                   <button type="button" class="btn btn-danger">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
@@ -362,19 +391,42 @@
       </table>
     </div>
   </div>
-  <!-- Optional JavaScript; choose one of the two! -->
+  <!-- AJAX -->
+  <script>
+    function FetchSearch() {
+      var keyword = $('#searchInput').val();
+      $.ajax({
+        type: 'POST',
+        url: './lib/ajaxdata.php',
+        data: {
+          find_cst: keyword
+        },
+        success: function(data) {
+          $('#customerTableBody').html(data);
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX Error:', status, error);
+        }
+      });
+    }
 
-  <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+    function FetchDate() {
+      var from = $('#fromDate').val();
+      var to = $('#toDate').val();
+      $.ajax({
+        url: './lib/ajaxdata.php',
+        type: 'POST',
+        data: {
+          from_date: $('#from_date').val(),
+          to_date: $('#to_date').val()
+        },
+        success: function(data) {
+          $('#customerTableBody').html(data);
+        }
+      });
 
-  <!-- Option 2: Separate Popper and Bootstrap JS -->
-  <!--
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
-    -->
-  <!-- Footer -->
+    }
+  </script>
 </body>
 
 </html>
