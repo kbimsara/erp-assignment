@@ -20,6 +20,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
+  <!-- jQuery (use full version, not slim) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
@@ -150,6 +152,28 @@
       </form>
     </div>
 
+    <!-- find section -->
+    <div class="container-fluid justify-content-center" style="background-color: #435663; padding: 25px; border-radius: 10px; margin-top: 60px;">
+      <center>
+        <h4>find</h4>
+      </center>
+      <!-- Search form (functionality not implemented) -->
+      <div class="form-inline justify-content-center mt-3 mb-3">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search by Name" aria-label="Search" style="width: 50%;" required id="searchInput">
+        <button class="btn btn-success my-2 my-sm-0" type="button" name="search" onclick="FetchSearch()">Search</button>
+      </div>
+
+    </div>
+    <!-- date filter -->
+    <div class="form-inline justify-content-center" style="margin-top: 50px;">
+      <div class="form-inline">
+        <input type="date" class="form-control mr-2" id="from_dateItem" name="from_dateItem">
+        <input type="date" class="form-control mr-2" id="to_dateItem" name="to_dateItem">
+        <button class="btn btn-success my-2 my-sm-0" type="button" onclick="FetchDate()">Search</button>
+      </div>
+
+    </div>
+
     <div class="container-fluid table-responsive" style="margin-top: 80px; margin-bottom: 50px;">
       <table class="table table-hover table-dark">
         <thead class="sticky-top bg-dark">
@@ -163,7 +187,7 @@
             <th scope="col">Action</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="customerTableBody">
           <?php
           require_once './config.php';
 
@@ -191,6 +215,10 @@
               <td scope="row"><?php echo $category; ?></td>
               <td scope="row"><?php echo $categorySub; ?></td>
               <td>
+
+                <a href="itemEdit.php?edit=<?php echo $itemCode; ?>">
+                  <button type="submit" class="btn btn-info" name="update" style="margin-right: 5px; width: 100px;">More</button>
+                </a>
                 <a href="./lib/Action.php?del=<?php echo $id; ?>">
                   <button type="button" class="btn btn-danger">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
@@ -229,6 +257,46 @@
         }
 
       })
+    }
+
+    function FetchSearch() {
+      var keyword = $('#searchInput').val();
+      $.ajax({
+        type: 'POST',
+        url: './lib/ajaxdata.php',
+        data: {
+          itemName: keyword
+        },
+        success: function(data) {
+          $('#customerTableBody').html(data);
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX Error:', status, error);
+        }
+      });
+    }
+
+
+    function FetchDate() {
+      let from_date = $('#from_dateItem').val();
+      let to_date = $('#to_dateItem').val();
+
+      if (from_date === "" || to_date === "") {
+        alert("Please select both From and To dates.");
+        return;
+      }
+
+      $.ajax({
+        url: "./lib/ajaxdata.php",
+        method: "POST",
+        data: {
+          from_dateItem: from_date,
+          to_dateItem: to_date
+        },
+        success: function(data) {
+          $('#itemTableBody').html(data);
+        }
+      });
     }
   </script>
 
