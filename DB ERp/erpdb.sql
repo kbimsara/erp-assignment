@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2025 at 04:36 AM
+-- Generation Time: Nov 09, 2025 at 12:13 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -32,9 +32,35 @@ CREATE TABLE `bill` (
   `itemCode` varchar(10) NOT NULL,
   `id` varchar(10) NOT NULL,
   `unitCount` int(5) NOT NULL,
-  `netPrice` varchar(10) NOT NULL,
+  `netPrice` decimal(10,0) NOT NULL,
   `timeStamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `bill`
+--
+
+INSERT INTO `bill` (`billNo`, `itemCode`, `id`, `unitCount`, `netPrice`, `timeStamp`) VALUES
+('1293847506', 'itm100006', 'cst1005', 3, 630000, '2025-03-15 11:50:00'),
+('1938475620', 'itm100016', 'cst1019', 3, 255000, '2025-04-06 07:00:00'),
+('2405918376', 'itm100004', 'cst1016', 2, 360000, '2025-04-02 03:55:00'),
+('2956713084', 'itm100018', 'cst1012', 3, 84000, '2025-03-25 11:15:00'),
+('3649105728', 'itm100017', 'cst1015', 6, 48000, '2025-03-29 02:30:00'),
+('3849201573', 'itm100001', 'cst1001', 2, 290000, '2025-03-05 04:30:00'),
+('4815093726', 'itm100015', 'cst1004', 1, 85000, '2025-03-12 03:30:00'),
+('5182069473', 'itm100022', 'cst1014', 1, 98000, '2025-03-27 05:20:00'),
+('5479031826', 'itm100019', 'cst1008', 4, 72000, '2025-03-19 04:40:00'),
+('6189374502', 'itm100011', 'cst1009', 1, 55000, '2025-03-21 06:30:00'),
+('6519372048', 'itm100024', 'cst1018', 2, 460000, '2025-04-05 06:15:00'),
+('7092836154', 'itm100028', 'cst1010', 2, 120000, '2025-03-22 10:10:00'),
+('7361509482', 'itm100012', 'cst1003', 1, 72000, '2025-03-10 09:00:00'),
+('7368205914', 'itm100026', 'cst1013', 2, 420000, '2025-03-26 03:50:00'),
+('8201934756', 'itm100025', 'cst1011', 1, 180000, '2025-03-24 06:00:00'),
+('8362054719', 'itm100010', 'cst1007', 1, 200000, '2025-03-18 08:15:00'),
+('8527013946', 'itm100005', 'cst1020', 1, 325000, '2025-04-07 10:25:00'),
+('9154726038', 'itm100007', 'cst1002', 1, 245000, '2025-03-07 05:45:00'),
+('9275613048', 'itm100020', 'cst1006', 2, 104000, '2025-03-17 03:20:00'),
+('9305841726', 'itm100021', 'cst1017', 1, 72000, '2025-04-03 08:40:00');
 
 -- --------------------------------------------------------
 
@@ -96,7 +122,7 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `title`, `firstName`, `lastName`, `contact`, `district`, `timeStamp`) VALUES
-('cst1001', 'Mr', 'Kavinduu', 'Perera', '0712345670', 'Colombo', '2025-01-10 04:00:00'),
+('cst1001', 'Mr', 'Kavindu', 'Perera', '0712345670', 'Colombo', '2025-01-10 04:00:00'),
 ('cst1002', 'Mrs', 'Sanduni', 'Silva', '0771234567', 'Gampaha', '2025-01-12 04:45:00'),
 ('cst1003', 'Miss', 'Nadeesha', 'Fernando', '0759876543', 'Kandy', '2025-01-15 09:15:00'),
 ('cst1004', 'Dr', 'Ruwan', 'Jayasinghe', '0781122334', 'Galle', '2025-01-18 02:50:00'),
@@ -147,7 +173,6 @@ CREATE TABLE `items` (
 --
 
 INSERT INTO `items` (`itemCode`, `itemName`, `idCt`, `quantity`, `unitPrice`, `timeStamp`) VALUES
-('itm0765778', 'qwqw', 11, 1, '12', '2025-11-06 03:13:19'),
 ('itm100001', 'Dell Inspiron 15', 1, 25, '145000', '2025-01-01 04:40:00'),
 ('itm100002', 'HP Pavilion x360', 2, 40, '152000', '2025-01-02 05:30:00'),
 ('itm100003', 'Lenovo ThinkPad E14', 3, 35, '165000', '2025-01-03 06:30:00'),
@@ -166,8 +191,6 @@ INSERT INTO `items` (`itemCode`, `itemName`, `idCt`, `quantity`, `unitPrice`, `t
 ('itm100016', 'Wooden Armchair', 16, 30, '45000', '2025-01-16 09:05:00'),
 ('itm100017', 'Plastic Chair', 17, 90, '8000', '2025-01-17 10:10:00'),
 ('itm100018', 'Office Revolving Chair', 18, 50, '28000', '2025-01-18 11:15:00'),
-('itm100019', 'Dining Chair', 19, 35, '18000', '2025-01-19 12:20:00'),
-('itm100020', 'Gaming Chair', 20, 40, '52000', '2025-01-20 13:25:00'),
 ('itm100021', 'Asus TUF Gaming Laptop', 21, 25, '175000', '2025-01-21 03:30:00'),
 ('itm100022', 'Samsung A55', 22, 55, '98000', '2025-01-22 04:45:00'),
 ('itm100023', 'Mini Study Table', 23, 15, '30000', '2025-01-23 06:00:00'),
@@ -182,6 +205,12 @@ INSERT INTO `items` (`itemCode`, `itemName`, `idCt`, `quantity`, `unitPrice`, `t
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `bill`
+--
+ALTER TABLE `bill`
+  ADD PRIMARY KEY (`billNo`);
 
 --
 -- Indexes for table `category`
