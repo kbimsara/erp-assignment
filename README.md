@@ -17,7 +17,7 @@ You will need to have XAMPP installed on your machine. You can download it from 
 3. Run the following command:
 
 ```bash
-git clone https://github.com/your-username/erp-assignment.git
+git clone https://github.com/kbimsara/erp-assignment.git
 ```
 
 ### Database Setup
