@@ -219,7 +219,7 @@
         <input type="date" name="toDate" id="toDate" class="form-control" placeholder="No data" required>
       </div>
       <div class="form-group col-md-2">
-        <button class="btn btn-success my-2 my-sm-0" type="button" name="search" onclick="FetchSearch()">Search</button>
+        <button class="btn btn-success my-2 my-sm-0" type="button" name="search" onclick="FetchDate()">Search</button>
       </div>
     </div>
 
@@ -413,15 +413,24 @@
     function FetchDate() {
       var from = $('#fromDate').val();
       var to = $('#toDate').val();
+
+      if (!from || !to) {
+        alert('Please select both From and To dates.');
+        return;
+      }
+
       $.ajax({
         url: './lib/ajaxdata.php',
         type: 'POST',
         data: {
-          from_date: $('#from_date').val(),
-          to_date: $('#to_date').val()
+          from_date: from,
+          to_date: to
         },
         success: function(data) {
           $('#customerTableBody').html(data);
+        },
+        error: function(xhr, status, error) {
+          console.error('AJAX Error:', status, error);
         }
       });
 
