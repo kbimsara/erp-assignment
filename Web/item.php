@@ -187,7 +187,7 @@
             <th scope="col">Action</th>
           </tr>
         </thead>
-        <tbody id="customerTableBody">
+  <tbody id="itemTableBody">
           <?php
           require_once './config.php';
 
@@ -268,7 +268,7 @@
           itemName: keyword
         },
         success: function(data) {
-          $('#customerTableBody').html(data);
+          $('#itemTableBody').html(data);
         },
         error: function(xhr, status, error) {
           console.error('AJAX Error:', status, error);
